@@ -19,7 +19,7 @@ async function loadPieChart() {
 
     const options = {
       chart: {
-        type: 'pie',
+        type: 'donut',
         height: 350
       },
       labels: stockLabels,
