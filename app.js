@@ -1,32 +1,51 @@
 // app.js
 
+// Enable fullscreen on section click
+document.querySelectorAll('.section').forEach(section => {
+  section.addEventListener('click', function (e) {
+    // Prevent double clicks on buttons/forms triggering fullscreen
+    if (e.target.closest('button') || e.target.closest('input') || e.target.tagName === 'SELECT') return;
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      this.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    }
+  });
+});
+
+
+// Function to load pie chart
 async function loadPieChart() {
   try {
-    const response = await fetch("http://localhost:3001/api/portfolio"); // Update with your API if different
+    const response = await fetch("http://localhost:3001/api/portfolio");
     const holdings = await response.json();
 
-    // Transform to stock-wise total value
+    // Transform to stock-wise quantity (not total value)
     const stockLabels = [];
-    const stockValues = [];
+    const stockQuantities = [];
 
     for (const holding of holdings) {
-      const { stock_ticker, quantity, current_price } = holding;
-      const totalValue = quantity * current_price;
-
+      const { stock_ticker, quantity } = holding;
       stockLabels.push(stock_ticker);
-      stockValues.push(totalValue);
+      stockQuantities.push(quantity);
     }
 
     const options = {
       chart: {
-        type: 'donut',
+        type: 'pie',
         height: 350
       },
       labels: stockLabels,
-      series: stockValues,
+      series: stockQuantities,
       title: {
-        text: 'Portfolio Allocation by Stock',
+        text: 'Stock Holdings by Quantity',
         align: 'center'
+      },
+      legend: {
+        position: 'bottom'
       }
     };
 
@@ -36,6 +55,7 @@ async function loadPieChart() {
     console.error("Error loading pie chart:", error);
   }
 }
+
 
 
 async function fetchPortfolio() {

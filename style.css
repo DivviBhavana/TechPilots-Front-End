@@ -92,11 +92,19 @@ tbody tr:nth-child(even) {
 }
 
 /* Scrollable table container */
+/* Normal view: Scrollable table container */
 table {
   display: block;
   max-height: 300px;
   overflow-y: auto;
 }
+
+/* Fullscreen view: Expand table */
+:fullscreen table {
+  max-height: 100%;
+  overflow: visible;
+}
+
 .delete-btn {
   background-color: #e74c3c;
   color: white;
@@ -108,4 +116,10 @@ table {
 
 .delete-btn:hover {
   background-color: #c0392b;
+}
+:fullscreen {
+  background: white;
+  z-index: 9999;
+  overflow: auto;
+  padding: 30px;
 }
