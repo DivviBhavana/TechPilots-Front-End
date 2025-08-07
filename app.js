@@ -17,44 +17,51 @@ document.querySelectorAll('.section').forEach(section => {
 });
 
 
-// Function to load pie chart
 async function loadPieChart() {
   try {
-    const response = await fetch("http://localhost:3001/api/portfolio");
-    const holdings = await response.json();
+    const response = await fetch('http://localhost:3001/api/portfolio'); // your endpoint
+    const data = await response.json();
 
-    // Transform to stock-wise quantity (not total value)
-    const stockLabels = [];
-    const stockQuantities = [];
+    // Step 1: Aggregate by stock_ticker
+    const aggregated = {};
+    data.forEach(item => {
+      const { stock_ticker, quantity, purchase_price } = item;
+      const total = parseFloat(quantity) * parseFloat(purchase_price);
 
-    for (const holding of holdings) {
-      const { stock_ticker, quantity } = holding;
-      stockLabels.push(stock_ticker);
-      stockQuantities.push(quantity);
-    }
+      if (aggregated[stock_ticker]) {
+        aggregated[stock_ticker] += total;
+      } else {
+        aggregated[stock_ticker] = total;
+      }
+    });
 
+    // Step 2: Prepare data for ApexCharts
+    const labels = Object.keys(aggregated);
+    const series = Object.values(aggregated);
+
+    // Step 3: Render Pie Chart
     const options = {
       chart: {
         type: 'pie',
-        height: 350
+        height: 350,
       },
-      labels: stockLabels,
-      series: stockQuantities,
+      labels: labels,
+      series: series,
       title: {
-        text: 'Stock Holdings by Quantity',
+        text: "Portfolio Distribution by Investment",
         align: 'center'
-      },
-      legend: {
-        position: 'bottom'
       }
     };
 
     const chart = new ApexCharts(document.querySelector("#pieChart"), options);
     chart.render();
   } catch (error) {
-    console.error("Error loading pie chart:", error);
+    console.error("Error loading pie chart data:", error);
   }
 }
+
+//loadPieChart();
+
 
 
 
